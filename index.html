@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#101827" />
+<title>Convertly — Currency Converter</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#18263a;--muted:#91a2b9;--text:#f4f7fb;--line:#293950;--accent:#8be0c0;--accent2:#b7f1dc}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 10%,#1b3450 0,transparent 34%),radial-gradient(circle at 90% 85%,#183c39 0,transparent 30%),var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);display:flex;align-items:center;justify-content:center;padding:28px}
+.app{width:min(100%,920px)}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:34px}.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:21px;letter-spacing:-.5px}.logo{width:38px;height:38px;border-radius:12px;background:var(--accent);color:#092019;display:grid;place-items:center;font-size:21px;font-weight:900}.live{font-size:12px;color:var(--accent);border:1px solid #315c50;border-radius:99px;padding:8px 12px;display:flex;gap:7px;align-items:center}.dot{width:7px;height:7px;background:var(--accent);border-radius:50%;box-shadow:0 0 10px var(--accent)}
+.hero{margin-bottom:24px}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--accent);font-size:11px;font-weight:800}.hero h1{font-size:clamp(32px,6vw,52px);letter-spacing:-2px;line-height:1.05;margin:10px 0}.hero p{color:var(--muted);margin:0;font-size:15px}
+.card{background:linear-gradient(145deg,rgba(24,38,58,.97),rgba(15,26,42,.97));border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,34px);box-shadow:0 24px 80px #0005}
+.amount-label{display:block;color:var(--muted);font-size:13px;margin-bottom:10px}.amount{width:100%;font-size:clamp(30px,6vw,42px);font-weight:750;letter-spacing:-1.5px;color:var(--text);background:transparent;border:0;outline:0;padding:0 0 20px;border-bottom:1px solid var(--line)}.amount::placeholder{color:#52647a}
+.currency-row{display:grid;grid-template-columns:1fr 54px 1fr;gap:14px;align-items:end;margin-top:22px}.currency-box{min-width:0}.currency-box label{display:block;color:var(--muted);font-size:12px;margin-bottom:9px}.select-wrap{position:relative}.currency-select{appearance:none;width:100%;background:#0d1726;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:15px 38px 15px 14px;font-size:15px;font-weight:650;outline:none;cursor:pointer}.select-wrap:after{content:"⌄";position:absolute;right:15px;top:11px;color:var(--muted);font-size:20px;pointer-events:none}.swap{height:48px;width:48px;border-radius:50%;border:1px solid #456456;background:#1b3b36;color:var(--accent);font-size:22px;cursor:pointer;transition:.2s}.swap:hover{transform:rotate(180deg);background:#285246}
+.result{margin-top:22px;background:linear-gradient(110deg,#17372f,#1b3c3c);border:1px solid #326253;border-radius:18px;padding:20px 22px}.result-top{display:flex;justify-content:space-between;align-items:center;color:#b7d7cc;font-size:12px}.result-value{font-size:clamp(32px,6vw,44px);font-weight:800;letter-spacing:-1.5px;margin:9px 0 4px;overflow-wrap:anywhere}.rate-line{color:#c2d9d1;font-size:13px}.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:12px 17px;font-weight:750;cursor:pointer;font-size:13px}.primary{background:var(--accent);color:#092019}.secondary{background:#202f43;color:#dce6f2;border:1px solid var(--line)}.btn:hover{filter:brightness(1.08)}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:17px}.status{min-height:18px;color:var(--muted);font-size:12px;margin-top:12px}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}.quick button{background:#152338;border:1px solid var(--line);color:#c6d3e2;padding:8px 12px;border-radius:99px;font-size:12px;cursor:pointer}.quick button:hover{border-color:var(--accent);color:var(--accent)}
+footer{text-align:center;color:#6f8199;font-size:11px;margin-top:20px;line-height:1.6}
+@media(max-width:560px){body{padding:18px}.currency-row{grid-template-columns:1fr 44px 1fr;gap:8px}.swap{width:42px;height:42px}.currency-select{padding:14px 27px 14px 10px;font-size:13px}.result{padding:18px}.hero h1{letter-spacing:-1.4px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand"><div class="logo">↗</div>convertly</div><div class="live"><span class="dot"></span><span id="liveLabel">Connecting to rates…</span></div></header>
+<section class="hero"><div class="eyebrow">Currency, made simple</div><h1>Money moves.<br>Know the value.</h1><p>Convert currencies with the latest available exchange rates.</p></section>
+<section class="card">
+<label class="amount-label" for="amount">Amount</label>
+<input id="amount" class="amount" type="number" min="0" step="any" value="1000" inputmode="decimal" placeholder="Enter amount" />
+<div class="currency-row">
+<div class="currency-box"><label for="from">From</label><div class="select-wrap"><select class="currency-select" id="from"></select></div></div>
+<button class="swap" id="swap" aria-label="Swap currencies" title="Swap currencies">⇄</button>
+<div class="currency-box"><label for="to">To</label><div class="select-wrap"><select class="currency-select" id="to"></select></div></div>
+</div>
+<div class="result">
+<div class="result-top"><span>YOU'LL RECEIVE</span><span id="resultCode">USD</span></div>
+<div class="result-value" id="result">—</div>
+<div class="rate-line" id="rateLine">Fetching exchange rate…</div>
+</div>
+<div class="actions"><button class="btn primary" id="convert">Convert now ↗</button><button class="btn secondary" id="copy">Copy result</button></div>
+<div class="meta"><span id="updated">Rates are provided by a public exchange-rate service.</span><span id="precision">Indicative rates</span></div>
+<div class="status" id="status" role="status" aria-live="polite"></div>
+<div class="quick"><button data-pair="INR-USD">INR → USD</button><button data-pair="USD-EUR">USD → EUR</button><button data-pair="USD-GBP">USD → GBP</button><button data-pair="EUR-INR">EUR → INR</button><button data-pair="USD-JPY">USD → JPY</button></div>
+</section>
+<footer>Exchange rates are indicative and may differ from the rates offered by banks, card networks, or money-transfer services.<br>Built as a starter project · No API key required</footer>
+</main>
+<script>
+const currencies = [
+["AED","UAE Dirham","🇦🇪"],["AUD","Australian Dollar","🇦🇺"],["BDT","Bangladeshi Taka","🇧🇩"],["BRL","Brazilian Real","🇧🇷"],["CAD","Canadian Dollar","🇨🇦"],["CHF","Swiss Franc","🇨🇭"],["CNY","Chinese Yuan","🇨🇳"],["DKK","Danish Krone","🇩🇰"],["EGP","Egyptian Pound","🇪🇬"],["EUR","Euro","🇪🇺"],["GBP","British Pound","🇬🇧"],["HKD","Hong Kong Dollar","🇭🇰"],["IDR","Indonesian Rupiah","🇮🇩"],["ILS","Israeli New Shekel","🇮🇱"],["INR","Indian Rupee","🇮🇳"],["JPY","Japanese Yen","🇯🇵"],["KES","Kenyan Shilling","🇰🇪"],["KRW","South Korean Won","🇰🇷"],["KWD","Kuwaiti Dinar","🇰🇼"],["LKR","Sri Lankan Rupee","🇱🇰"],["MXN","Mexican Peso","🇲🇽"],["MYR","Malaysian Ringgit","🇲🇾"],["NOK","Norwegian Krone","🇳🇴"],["NPR","Nepalese Rupee","🇳🇵"],["NZD","New Zealand Dollar","🇳🇿"],["PHP","Philippine Peso","🇵🇭"],["PKR","Pakistani Rupee","🇵🇰"],["QAR","Qatari Riyal","🇶🇦"],["RUB","Russian Ruble","🇷🇺"],["SAR","Saudi Riyal","🇸🇦"],["SEK","Swedish Krona","🇸🇪"],["SGD","Singapore Dollar","🇸🇬"],["THB","Thai Baht","🇹🇭"],["TRY","Turkish Lira","🇹🇷"],["TWD","Taiwan Dollar","🇹🇼"],["UAH","Ukrainian Hryvnia","🇺🇦"],["USD","US Dollar","🇺🇸"],["VND","Vietnamese Dong","🇻🇳"],["ZAR","South African Rand","🇿🇦"]
+];
+const $ = id => document.getElementById(id);
+let rates = {}, lastUpdated = null;
+function fillSelect(el, selected){el.innerHTML="";currencies.slice().sort((a,b)=>a[0].localeCompare(b[0])).forEach(([code,name,flag])=>{const o=document.createElement("option");o.value=code;o.textContent=`${flag}  ${code} — ${name}`;if(code===selected)o.selected=true;el.appendChild(o);});}
+fillSelect($("from"),"INR");fillSelect($("to"),"USD");
+const symbols={USD:"$",INR:"₹",EUR:"€",GBP:"£",JPY:"¥",CNY:"¥",KRW:"₩",AED:"د.إ",CAD:"C$",AUD:"A$",CHF:"Fr",SGD:"S$",NZD:"NZ$",HKD:"HK$",BRL:"R$",MXN:"$"};
+const fmt=(n,code)=>new Intl.NumberFormat(undefined,{maximumFractionDigits:["JPY","KRW","VND","IDR"].includes(code)?0:2,minimumFractionDigits:0}).format(n);
+async function loadRates(base){
+  try{
+    $("liveLabel").textContent="Updating rates…";
+    const res=await fetch(`https://open.er-api.com/v6/latest/${base}`);
+    if(!res.ok) throw new Error("Rate service unavailable");
+    const data=await res.json();
+    if(data.result!=="success") throw new Error("Could not load exchange rates");
+    rates=data.rates;lastUpdated=new Date(data.time_last_update_utc);
+    $("liveLabel").textContent="Rates connected";
+    $("updated").textContent=`Rates last updated: ${lastUpdated.toLocaleString()}`;
+    return true;
+  }catch(e){$("liveLabel").textContent="Offline";$("status").textContent="Live rates couldn't be loaded. Check your internet connection and try again.";return false;}
+}
+async function convert(){
+ const amount=Number($("amount").value),from=$("from").value,to=$("to").value;
+ if(!Number.isFinite(amount)||amount<0){$("status").textContent="Enter a valid amount.";return;}
+ if(!rates.__base || rates.__base!==from){const ok=await loadRates(from);if(!ok)return;rates.__base=from;}
+ const rate=rates[to];
+ if(!rate){$("status").textContent="Rate unavailable for this currency.";return;}
+ const value=amount*rate;
+ $("resultCode").textContent=to;
+ $("result").textContent=`${symbols[to]||""}${fmt(value,to)} ${to}`;
+ $("rateLine").textContent=`1 ${from} = ${fmt(rate,to)} ${to}`;
+ $("status").textContent="";
+}
+$("convert").addEventListener("click",convert);
+$("amount").addEventListener("input",()=>{if($("amount").value!=="")convert();});
+$("from").addEventListener("change",()=>{rates.__base=null;convert();});
+$("to").addEventListener("change",convert);
+$("swap").addEventListener("click",()=>{const a=$("from").value;$("from").value=$("to").value;$("to").value=a;rates.__base=null;convert();});
+$("copy").addEventListener("click",async()=>{const value=$("result").textContent;if(value==="—")return;$("status").textContent="";try{await navigator.clipboard.writeText(value);$("status").textContent="Result copied to clipboard.";}catch{$("status").textContent="Copy isn't available in this browser."; }});
+document.querySelectorAll("[data-pair]").forEach(b=>b.addEventListener("click",()=>{const [a,c]=b.dataset.pair.split("-");$("from").value=a;$("to").value=c;rates.__base=null;convert();}));
+convert();
+</script>
+</body>
+</html>
